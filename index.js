@@ -25,6 +25,7 @@ async function run() {
 
     // all collection here
     const usersCollection = client.db("UnixEducation").collection("users");
+    const collageCollection = client.db("UnixEducation").collection("collage");
 
     // users api
     app.put("/users/:email", async (req, res) => {
@@ -76,7 +77,24 @@ async function run() {
       console.log(result);
       res.send(result);
     });
-
+    // collage collection api
+    app.get("/collage", async (req, res) => {
+      const result = await collageCollection.find().toArray();
+      res.send(result);
+    });
+    // add a collage
+    app.post("/addCollage", async (req, res) => {
+      const doc = req.body;
+      const result = await collageCollection.insertOne(doc);
+      res.send(result);
+    });
+    // get a single collage
+    app.get("/collage/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await collageCollection.findOne(query);
+      res.send(result);
+    });
     await client.db("admin").command({ ping: 1 });
     console.log("Unix Education server successfully connected to MongoDB!");
   } finally {
