@@ -25,7 +25,11 @@ async function run() {
 
     // all collection here
     const usersCollection = client.db("UnixEducation").collection("users");
+    const userReviewCollection = client
+      .db("UnixEducation")
+      .collection("userReview");
     const collageCollection = client.db("UnixEducation").collection("collage");
+    const enrollCollection = client.db("UnixEducation").collection("enroll");
 
     // users api
     app.put("/users/:email", async (req, res) => {
@@ -93,6 +97,35 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await collageCollection.findOne(query);
+      res.send(result);
+    });
+    // add a Enroll
+    app.post("/addEnroll", async (req, res) => {
+      const doc = req.body;
+      const result = await enrollCollection.insertOne(doc);
+      res.send(result);
+    });
+    // enroll collection api
+    app.get("/enroll", async (req, res) => {
+      const result = await enrollCollection.find().toArray();
+      res.send(result);
+    });
+    // my enrollment api (cart)
+    app.get("/myEnroll", async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+      const result = await enrollCollection.find(query).toArray();
+      res.send(result);
+    });
+    // add a Review
+    app.post("/review", async (req, res) => {
+      const doc = req.body;
+      const result = await userReviewCollection.insertOne(doc);
+      res.send(result);
+    });
+    // all review collection api
+    app.get("/review", async (req, res) => {
+      const result = await userReviewCollection.find().toArray();
       res.send(result);
     });
     await client.db("admin").command({ ping: 1 });
